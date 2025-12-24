@@ -1,0 +1,16 @@
+import { PlaceholderPage } from '../../components/PlaceholderPage';
+
+export function ResellerSSLPage() {
+  return (
+    <PlaceholderPage
+      title="SSL Certificates for Customers"
+      description="Issue and manage SSL certificates for customer domains"
+      features={[
+        'Issue SSL certificates for customer domains',
+        'Let\'s Encrypt integration',
+        'Certificate renewal management',
+        'View certificate status',
+      ]}
+    />
+  );
+}

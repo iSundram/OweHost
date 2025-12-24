@@ -1,0 +1,622 @@
+openapi: 3.0.3
+info:
+  title: OweHost API
+  description: |
+    OweHost Backend API - A comprehensive hosting panel backend system.
+    
+    ## Authentication
+    
+    The API supports two authentication methods:
+    
+    1. **JWT Bearer Token**: Use the `/api/v1/auth/login` endpoint to obtain tokens
+    2. **API Key**: Use the `ApiKey` prefix in the Authorization header
+    
+    ## Rate Limiting
+    
+    API requests are rate limited. Check response headers for limit information.
+    
+  version: 1.0.0
+  contact:
+    name: OweHost Support
+  license:
+    name: MIT
+    
+servers:
+  - url: http://localhost:8080
+    description: Development server
+    
+tags:
+  - name: Authentication
+    description: User authentication and authorization
+  - name: Users
+    description: User management operations
+  - name: Domains
+    description: Domain management operations
+  - name: DNS
+    description: DNS zone and record management
+  - name: Databases
+    description: Database management operations
+  - name: Files
+    description: File system operations
+  - name: Backups
+    description: Backup and restore operations
+  - name: SSL
+    description: SSL certificate management
+  - name: Runtimes
+    description: Runtime and language management (PHP, Node.js, Python)
+  - name: Cron
+    description: Cron job management
+  - name: System
+    description: System health and metrics
+
+paths:
+  /health:
+    get:
+      tags:
+        - System
+      summary: Health check
+      operationId: healthCheck
+      responses:
+        '200':
+          description: Server is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: healthy
+                  version:
+                    type: string
+                    example: 1.0.0
+
+  /ready:
+    get:
+      tags:
+        - System
+      summary: Readiness check
+      operationId: readinessCheck
+      responses:
+        '200':
+          description: Server is ready
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ready:
+                    type: boolean
+                    example: true
+
+  /metrics:
+    get:
+      tags:
+        - System
+      summary: Prometheus metrics
+      operationId: getMetrics
+      responses:
+        '200':
+          description: Prometheus metrics
+          content:
+            text/plain:
+              schema:
+                type: string
+
+  /api/v1/auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: User login
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/auth/refresh:
+    post:
+      tags:
+        - Authentication
+      summary: Refresh tokens
+      operationId: refreshToken
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshRequest'
+      responses:
+        '200':
+          description: Tokens refreshed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Invalid refresh token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/auth/logout:
+    post:
+      tags:
+        - Authentication
+      summary: User logout
+      operationId: logout
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshRequest'
+      responses:
+        '200':
+          description: Logout successful
+
+  /api/v1/users:
+    get:
+      tags:
+        - Users
+      summary: List users
+      operationId: listUsers
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: tenant_id
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+    post:
+      tags:
+        - Users
+      summary: Create user
+      operationId: createUser
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreateRequest'
+      responses:
+        '201':
+          description: User created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/User'
+
+  /api/v1/users/me:
+    get:
+      tags:
+        - Users
+      summary: Get current user
+      operationId: getCurrentUser
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Current user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/User'
+
+  /api/v1/users/{id}:
+    get:
+      tags:
+        - Users
+      summary: Get user by ID
+      operationId: getUser
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+    patch:
+      tags:
+        - Users
+      summary: Update user
+      operationId: updateUser
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateRequest'
+      responses:
+        '200':
+          description: User updated
+    delete:
+      tags:
+        - Users
+      summary: Delete user
+      operationId: deleteUser
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: User deleted
+
+  /api/v1/domains:
+    get:
+      tags:
+        - Domains
+      summary: List domains
+      operationId: listDomains
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of domains
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Domain'
+    post:
+      tags:
+        - Domains
+      summary: Create domain
+      operationId: createDomain
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DomainCreateRequest'
+      responses:
+        '201':
+          description: Domain created
+
+  /api/v1/domains/{id}:
+    get:
+      tags:
+        - Domains
+      summary: Get domain by ID
+      operationId: getDomain
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Domain details
+    delete:
+      tags:
+        - Domains
+      summary: Delete domain
+      operationId: deleteDomain
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Domain deleted
+
+  /api/v1/databases:
+    get:
+      tags:
+        - Databases
+      summary: List databases
+      operationId: listDatabases
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of databases
+    post:
+      tags:
+        - Databases
+      summary: Create database
+      operationId: createDatabase
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DatabaseCreateRequest'
+      responses:
+        '201':
+          description: Database created
+
+  /api/v1/databases/{id}:
+    get:
+      tags:
+        - Databases
+      summary: Get database by ID
+      operationId: getDatabase
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Database details
+    delete:
+      tags:
+        - Databases
+      summary: Delete database
+      operationId: deleteDatabase
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Database deleted
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+
+  schemas:
+    LoginRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+
+    LoginResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+        expires_in:
+          type: integer
+        token_type:
+          type: string
+
+    RefreshRequest:
+      type: object
+      required:
+        - refresh_token
+      properties:
+        refresh_token:
+          type: string
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        tenant_id:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+        status:
+          type: string
+          enum: [active, suspended, terminated]
+        uid:
+          type: integer
+        gid:
+          type: integer
+        home_directory:
+          type: string
+        namespace:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    UserCreateRequest:
+      type: object
+      required:
+        - username
+        - email
+        - password
+      properties:
+        username:
+          type: string
+          minLength: 3
+          maxLength: 32
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+        tenant_id:
+          type: string
+
+    UserUpdateRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        status:
+          type: string
+          enum: [active, suspended, terminated]
+
+    Domain:
+      type: object
+      properties:
+        id:
+          type: string
+        user_id:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+          enum: [primary, addon, parked, alias]
+        status:
+          type: string
+          enum: [active, pending, suspended]
+        document_root:
+          type: string
+        validated:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+
+    DomainCreateRequest:
+      type: object
+      required:
+        - name
+        - type
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+          enum: [primary, addon, parked, alias]
+        document_root:
+          type: string
+        target_domain:
+          type: string
+
+    DatabaseCreateRequest:
+      type: object
+      required:
+        - name
+        - type
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+          enum: [mysql, postgresql, mariadb]
+        charset:
+          type: string
+        collation:
+          type: string
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+
+security:
+  - bearerAuth: []

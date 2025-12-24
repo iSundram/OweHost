@@ -1,0 +1,18 @@
+import { PlaceholderPage } from '../../components/PlaceholderPage';
+
+export function AdminFilesPage() {
+  return (
+    <PlaceholderPage
+      title="System File Manager"
+      description="Browse and manage files across all user accounts"
+      features={[
+        'Browse any user\'s files (with audit logging)',
+        'File permissions management',
+        'Storage mount management',
+        'Archive/Extract operations',
+        'Disk usage analysis',
+        'File integrity checks',
+      ]}
+    />
+  );
+}

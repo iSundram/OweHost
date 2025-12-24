@@ -1,0 +1,16 @@
+import { PlaceholderPage } from '../../components/PlaceholderPage';
+
+export function ResellerFilesPage() {
+  return (
+    <PlaceholderPage
+      title="Customer File Access"
+      description="File manager for customer accounts"
+      features={[
+        'File manager for customer accounts',
+        'File backup and restore',
+        'Disk usage viewer',
+        'FTP account management',
+      ]}
+    />
+  );
+}

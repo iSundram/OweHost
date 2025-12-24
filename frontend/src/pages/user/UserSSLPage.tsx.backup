@@ -1,0 +1,17 @@
+import { PlaceholderPage } from '../../components/PlaceholderPage';
+
+export function UserSSLPage() {
+  return (
+    <PlaceholderPage
+      title="SSL Certificates"
+      description="Manage SSL certificates for your domains"
+      features={[
+        'View installed certificates',
+        'Install Let\'s Encrypt certificate',
+        'Upload custom SSL certificate',
+        'Force HTTPS redirect',
+        'Certificate renewal status',
+      ]}
+    />
+  );
+}

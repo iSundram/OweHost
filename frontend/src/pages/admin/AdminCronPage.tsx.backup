@@ -1,0 +1,17 @@
+import { PlaceholderPage } from '../../components/PlaceholderPage';
+
+export function AdminCronPage() {
+  return (
+    <PlaceholderPage
+      title="System-Wide Cron Control"
+      description="Manage scheduled jobs across all users"
+      features={[
+        'View all scheduled jobs',
+        'Create/Edit/Delete cron jobs for any user',
+        'Job execution logs',
+        'Failed job alerts',
+        'Job execution limits',
+      ]}
+    />
+  );
+}

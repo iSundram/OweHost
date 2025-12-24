@@ -1,0 +1,16 @@
+import { PlaceholderPage } from '../../components/PlaceholderPage';
+
+export function UserCronPage() {
+  return (
+    <PlaceholderPage
+      title="Scheduled Tasks"
+      description="Create and manage cron jobs"
+      features={[
+        'Create cron job',
+        'Edit/Delete cron jobs',
+        'View execution logs',
+        'Set schedule (minute, hour, day, month, weekday)',
+      ]}
+    />
+  );
+}

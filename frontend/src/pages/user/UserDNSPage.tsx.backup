@@ -1,0 +1,16 @@
+import { PlaceholderPage } from '../../components/PlaceholderPage';
+
+export function UserDNSPage() {
+  return (
+    <PlaceholderPage
+      title="DNS Records"
+      description="Manage DNS records for your domains"
+      features={[
+        'Manage DNS records for my domains',
+        'Add/Edit/Delete records (A, AAAA, CNAME, MX, TXT)',
+        'DNS zone viewer',
+        'TTL configuration',
+      ]}
+    />
+  );
+}

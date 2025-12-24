@@ -1,0 +1,16 @@
+import { PlaceholderPage } from '../../components/PlaceholderPage';
+
+export function ResellerCronPage() {
+  return (
+    <PlaceholderPage
+      title="Cron Management for Customers"
+      description="Manage scheduled tasks for customer accounts"
+      features={[
+        'View customer cron jobs',
+        'Create/Edit/Delete cron jobs',
+        'Job execution logs',
+        'Job limits per customer',
+      ]}
+    />
+  );
+}

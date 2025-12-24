@@ -1,0 +1,19 @@
+import { PlaceholderPage } from '../../components/PlaceholderPage';
+
+export function AdminBackupsPage() {
+  return (
+    <PlaceholderPage
+      title="Backup Administration"
+      description="Configure and manage system-wide backups"
+      features={[
+        'Configure backup schedules',
+        'Full/Incremental/Differential backups',
+        'Backup priority management',
+        'Restore operations for any user',
+        'Cross-node restore',
+        'Backup storage management',
+        'Retention policies',
+      ]}
+    />
+  );
+}

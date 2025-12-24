@@ -1,0 +1,18 @@
+import { PlaceholderPage } from '../../components/PlaceholderPage';
+
+export function AdminSSLPage() {
+  return (
+    <PlaceholderPage
+      title="SSL Certificate Management"
+      description="Certificate administration and auto-renewal"
+      features={[
+        'View all SSL certificates',
+        'Issue Let\'s Encrypt certificates',
+        'Upload custom certificates',
+        'Auto-renewal configuration',
+        'Certificate validation tracking',
+        'Wildcard certificate management',
+      ]}
+    />
+  );
+}

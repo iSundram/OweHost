@@ -1,0 +1,17 @@
+import { PlaceholderPage } from '../../components/PlaceholderPage';
+
+export function UserBackupsPage() {
+  return (
+    <PlaceholderPage
+      title="Backup & Restore"
+      description="Create and manage backups"
+      features={[
+        'Create manual backup',
+        'Schedule automatic backups',
+        'Download backups',
+        'Restore from backup',
+        'Backup history',
+      ]}
+    />
+  );
+}

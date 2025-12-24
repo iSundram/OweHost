@@ -1,0 +1,16 @@
+import { PlaceholderPage } from '../../components/PlaceholderPage';
+
+export function ResellerBackupsPage() {
+  return (
+    <PlaceholderPage
+      title="Customer Backup Management"
+      description="Configure and manage backups for customers"
+      features={[
+        'Configure backup schedules for customers',
+        'Backup and restore operations',
+        'Backup storage allocation',
+        'Download backup files',
+      ]}
+    />
+  );
+}
