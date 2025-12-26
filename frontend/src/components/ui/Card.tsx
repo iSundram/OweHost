@@ -10,11 +10,11 @@ export function Card({ children, className = '', hover = false }: CardProps) {
   return (
     <div
       className={`
-        bg-[var(--color-surface)]
+        bg-white
         rounded-xl
-        border border-[var(--color-border-light)]
-        shadow-lg
-        ${hover ? 'transition-all duration-200 hover:shadow-xl hover:border-[var(--color-border)]' : ''}
+        border border-[var(--color-border)]
+        shadow-sm
+        ${hover ? 'transition-all duration-200 hover:shadow-md hover:border-[var(--color-secondary)]' : ''}
         ${className}
       `}
     >
@@ -33,7 +33,7 @@ export function CardHeader({ children, className = '' }: CardHeaderProps) {
     <div
       className={`
         px-6 py-4
-        border-b border-[var(--color-border-light)]
+        border-b border-[var(--color-border)]
         ${className}
       `}
     >
@@ -80,8 +80,8 @@ export function CardFooter({ children, className = '' }: CardFooterProps) {
     <div
       className={`
         px-6 py-4
-        border-t border-[var(--color-border-light)]
-        bg-[var(--color-primary-dark)]/30
+        border-t border-[var(--color-border)]
+        bg-[var(--color-light)]
         ${className}
       `}
     >

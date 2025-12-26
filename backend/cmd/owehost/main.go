@@ -12,6 +12,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/iSundram/OweHost/internal/accountsvc"
 	"github.com/iSundram/OweHost/internal/api/middleware"
 	v1 "github.com/iSundram/OweHost/internal/api/v1"
 	"github.com/iSundram/OweHost/internal/appinstaller"
@@ -24,6 +25,7 @@ import (
 	"github.com/iSundram/OweHost/internal/database"
 	"github.com/iSundram/OweHost/internal/dns"
 	"github.com/iSundram/OweHost/internal/domain"
+	"github.com/iSundram/OweHost/internal/feature"
 	"github.com/iSundram/OweHost/internal/filesystem"
 	"github.com/iSundram/OweHost/internal/firewall"
 	"github.com/iSundram/OweHost/internal/ftp"
@@ -34,6 +36,7 @@ import (
 	"github.com/iSundram/OweHost/internal/metrics"
 	"github.com/iSundram/OweHost/internal/notification"
 	"github.com/iSundram/OweHost/internal/oscontrol"
+	"github.com/iSundram/OweHost/internal/packages"
 	"github.com/iSundram/OweHost/internal/plugin"
 	"github.com/iSundram/OweHost/internal/provisioning"
 	"github.com/iSundram/OweHost/internal/recovery"
@@ -48,6 +51,7 @@ import (
 	"github.com/iSundram/OweHost/internal/webserver"
 	"github.com/iSundram/OweHost/internal/websocket"
 	"github.com/iSundram/OweHost/pkg/config"
+	pkgdb "github.com/iSundram/OweHost/pkg/database"
 )
 
 // Server represents the OweHost API server
@@ -56,11 +60,15 @@ type Server struct {
 	api    *http.Server
 	user   *http.Server
 	admin  *http.Server
+	db     *pkgdb.DB
 
 	// Services
 	authService          *auth.Service
 	authorizationService *authorization.Service
 	userService          *user.Service
+	accountService       *accountsvc.Service
+	packageService       *packages.Service
+	featureService       *feature.Service
 	resellerService      *reseller.Service
 	resourceService      *resource.Service
 	domainService        *domain.Service
@@ -83,17 +91,17 @@ type Server struct {
 	recoveryService      *recovery.Service
 	installationService  *installation.Service
 	provisioningService  *provisioning.Service
-	
+
 	// New enhanced services
-	ftpService        *ftp.Service
-	sshService        *ssh.Service
-	gitService        *git.Service
-	statsService      *stats.Service
-	twoFactorService  *twofactor.Service
-	auditService      *audit.Service
-	metricsService    *metrics.Metrics
-	wsHub             *websocket.Hub
-	rateLimiter       *middleware.UserRateLimiter
+	ftpService       *ftp.Service
+	sshService       *ssh.Service
+	gitService       *git.Service
+	statsService     *stats.Service
+	twoFactorService *twofactor.Service
+	auditService     *audit.Service
+	metricsService   *metrics.Metrics
+	wsHub            *websocket.Hub
+	rateLimiter      *middleware.UserRateLimiter
 }
 
 // NewServer creates a new server instance
@@ -110,10 +118,38 @@ func NewServer(cfg *config.Config) *Server {
 
 // initServices initializes all services
 func (s *Server) initServices() {
+	// Initialize Database
+	var err error
+	s.db, err = pkgdb.New(pkgdb.Config{
+		Driver:          s.config.Database.Driver,
+		Host:            s.config.Database.Host,
+		Port:            s.config.Database.Port,
+		Database:        s.config.Database.Name,
+		Username:        s.config.Database.User,
+		Password:        s.config.Database.Password,
+		SSLMode:         s.config.Database.SSLMode,
+		MaxOpenConns:    25,
+		MaxIdleConns:    5,
+		ConnMaxLifetime: 5 * time.Minute,
+		ConnMaxIdleTime: 5 * time.Minute,
+	})
+	if err != nil {
+		fmt.Printf("Warning: Failed to connect to database: %v\n", err)
+	}
+
+	// Repositories
+	var userRepo *user.Repository
+	if s.db != nil {
+		userRepo = user.NewRepository(s.db)
+	}
+
 	s.loggingService = logging.NewService()
 	s.authService = auth.NewService(s.config)
 	s.authorizationService = authorization.NewService()
-	s.userService = user.NewService(s.config)
+	s.userService = user.NewService(s.config, userRepo)
+	s.accountService = accountsvc.NewService()
+	s.packageService = packages.NewService()
+	s.featureService = feature.NewService()
 	s.resellerService = reseller.NewService()
 	s.resourceService = resource.NewService()
 	s.domainService = domain.NewService()
@@ -146,7 +182,7 @@ func (s *Server) initServices() {
 		s.webserverService,
 		s.backupService,
 	)
-	
+
 	// Initialize new enhanced services
 	s.ftpService = ftp.NewService()
 	s.sshService = ssh.NewService()
@@ -173,8 +209,10 @@ func (s *Server) setupAPIRoutes() http.Handler {
 	installationHandler := v1.NewInstallationHandler(s.installationService)
 	adminHandler := v1.NewAdminHandler(s.userService, s.resellerService, s.domainService, s.databaseService, s.oscontrolService)
 	dnsHandler := v1.NewDNSHandler(s.dnsService, s.domainService)
-	accountHandler := v1.NewAccountHandler(s.userService, s.domainService, s.dnsService)
-	
+	accountHandler := v1.NewAccountHandler(s.accountService, s.userService, s.domainService, s.dnsService)
+	packageHandler := v1.NewPackageHandler(s.packageService)
+	featureHandler := v1.NewFeatureHandler(s.featureService)
+
 	// New handlers
 	sslHandler := v1.NewSSLHandler(s.sslService, s.userService)
 	backupHandler := v1.NewBackupHandler(s.backupService, s.userService)
@@ -186,13 +224,13 @@ func (s *Server) setupAPIRoutes() http.Handler {
 	firewallHandler := v1.NewFirewallHandler(s.firewallService, s.userService)
 	resourceHandler := v1.NewResourceHandler(s.resourceService, s.userService)
 	provisioningHandler := v1.NewProvisioningHandler(s.provisioningService, s.userService)
-	
+
 	// Enhanced service handlers
 	ftpHandler := v1.NewFTPHandler(s.ftpService, s.userService)
 	sshHandler := v1.NewSSHHandler(s.sshService, s.userService)
 	twoFactorHandler := v1.NewTwoFactorHandler(s.twoFactorService, s.userService)
 	auditHandler := v1.NewAuditHandler(s.auditService, s.userService)
-	
+
 	// Missing handlers that need routes registered
 	statsHandler := v1.NewStatsHandler(s.statsService)
 	gitHandler := v1.NewGitHandler(s.gitService)
@@ -399,6 +437,44 @@ func (s *Server) setupAPIRoutes() http.Handler {
 			return
 		}
 		http.Error(w, "Not found", http.StatusNotFound)
+	}))
+
+	// Package/Plan endpoints (protected)
+	mux.Handle("/api/v1/packages", authWrap(func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			packageHandler.List(w, r)
+		default:
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
+	}))
+	mux.Handle("/api/v1/packages/", authWrap(func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			packageHandler.Get(w, r)
+		default:
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
+	}))
+
+	// Feature manager endpoints (admin only)
+	mux.Handle("/api/v1/features", adminWrap(func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			featureHandler.List(w, r)
+		default:
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
+	}))
+	mux.Handle("/api/v1/features/", adminWrap(func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			featureHandler.Get(w, r)
+		case http.MethodPut, http.MethodPatch:
+			featureHandler.Update(w, r)
+		default:
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
 	}))
 
 	// DNS functions
@@ -1523,11 +1599,16 @@ func (s *Server) Start() error {
 func (s *Server) Shutdown(ctx context.Context) error {
 	s.loggingService.Info("server", "Shutting down server...")
 
+	var err error
 	if s.api != nil {
-		return s.api.Shutdown(ctx)
+		err = s.api.Shutdown(ctx)
 	}
 
-	return nil
+	if s.db != nil {
+		s.db.Close()
+	}
+
+	return err
 }
 
 // setupUserPanelRoutes sets up User Panel routes (Port 2083 - cPanel-like)

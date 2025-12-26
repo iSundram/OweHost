@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { Button, Input, Card, CardContent, CardHeader, Modal } from '../components/ui';
 import type { User, UserRole } from '../types';
-import { userService } from '../api/services';
+import { userService, accountService, packageService } from '../api/services';
 import { useAuth } from '../hooks/useAuth';
 
 interface ExtendedUser extends User {
@@ -119,14 +119,26 @@ export function UsersPage() {
     return matchesSearch && matchesStatus && matchesRole;
   });
 
-  const handleCreate = async (data: { username: string; email: string; password: string; role: UserRole }) => {
+  const handleCreate = async (data: { username: string; email: string; password: string; role: UserRole; plan?: string; domain?: string }) => {
     try {
-      await userService.create(data);
+      // If role is 'user', create filesystem account using accountService
+      if (data.role === 'user') {
+        await accountService.create({
+          username: data.username,
+          email: data.email,
+          password: data.password,
+          plan: data.plan || 'starter',
+          domain: data.domain,
+        });
+      } else {
+        // For admin/reseller, use userService (backward compatibility)
+        await userService.create(data);
+      }
       setIsCreateModalOpen(false);
       loadUsers();
     } catch (error) {
-      console.error('Failed to create user:', error);
-      alert('Failed to create user');
+      console.error('Failed to create user/account:', error);
+      alert('Failed to create user/account');
     }
   };
 
@@ -542,22 +554,35 @@ function CreateUserModal({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: { username: string; email: string; password: string; role: UserRole }) => void;
+  onSubmit: (data: { username: string; email: string; password: string; role: UserRole; plan?: string; domain?: string }) => void;
 }) {
   const [formData, setFormData] = useState({
     username: '',
     email: '',
     password: '',
     role: 'user' as UserRole,
+    plan: 'starter',
+    domain: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [packages, setPackages] = useState<Array<{ name: string; display_name: string }>>([]);
+
+  useEffect(() => {
+    if (isOpen && formData.role === 'user') {
+      packageService.list()
+        .then((pkgList) => {
+          setPackages(pkgList.map(pkg => ({ name: pkg.name, display_name: pkg.display_name })));
+        })
+        .catch(console.error);
+    }
+  }, [isOpen, formData.role]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
       await onSubmit(formData);
-      setFormData({ username: '', email: '', password: '', role: 'user' });
+      setFormData({ username: '', email: '', password: '', role: 'user', plan: 'starter', domain: '' });
     } finally {
       setIsSubmitting(false);
     }
@@ -604,6 +629,32 @@ function CreateUserModal({
             <option value="admin">Admin</option>
           </select>
         </div>
+        {formData.role === 'user' && (
+          <>
+            <div>
+              <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-2">
+                Plan/Package
+              </label>
+              <select
+                value={formData.plan}
+                onChange={(e) => setFormData({ ...formData, plan: e.target.value })}
+                className="w-full px-4 py-2 rounded-lg bg-[var(--color-primary-dark)] border border-[var(--color-border)] text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[#E7F0FA]"
+              >
+                {packages.map((pkg) => (
+                  <option key={pkg.name} value={pkg.name}>
+                    {pkg.display_name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <Input
+              label="Domain (Optional)"
+              value={formData.domain}
+              onChange={(e) => setFormData({ ...formData, domain: e.target.value })}
+              placeholder="example.com"
+            />
+          </>
+        )}
         <div className="flex gap-3 pt-4">
           <Button type="button" variant="ghost" onClick={onClose} className="flex-1">
             Cancel

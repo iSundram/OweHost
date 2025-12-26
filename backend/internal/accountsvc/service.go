@@ -99,6 +99,11 @@ func (s *Service) Create(ctx context.Context, req *CreateRequest, actor, actorTy
 		return nil, fmt.Errorf("failed to apply account: %w", err)
 	}
 
+	// Set password
+	if err := s.accountState.SetPassword(accountID, req.Password); err != nil {
+		return nil, fmt.Errorf("failed to set password: %w", err)
+	}
+
 	// Emit event
 	s.events.AccountCreated(accountID, req.Username, actor, actorType, actorIP)
 
@@ -317,4 +322,24 @@ func (s *Service) GetByUsername(ctx context.Context, username string) (*account.
 	}
 
 	return nil, fmt.Errorf("account not found: %s", username)
+}
+
+// Authenticate authenticates an account with username/password
+func (s *Service) Authenticate(ctx context.Context, username, password string) (*account.AccountIdentity, error) {
+	return s.accountState.AuthenticateAccount(username, password)
+}
+
+// ChangePassword changes an account's password
+func (s *Service) ChangePassword(ctx context.Context, accountID int, newPassword, actor, actorType string) error {
+	if err := s.accountState.SetPassword(accountID, newPassword); err != nil {
+		return err
+	}
+
+	s.events.EmitSuccess(events.EventPasswordChange, events.EmitOptions{
+		AccountID: accountID,
+		Actor:     actor,
+		ActorType: actorType,
+	})
+
+	return nil
 }

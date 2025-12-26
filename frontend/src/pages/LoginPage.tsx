@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { Navigate, Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { Button, Input } from '../components/ui';
+import { Button, Input, LoadingBar } from '../components/ui';
 import { Lock, User, Eye, EyeOff } from 'lucide-react';
 import type { UserRole } from '../types';
 
@@ -48,17 +48,21 @@ export function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[var(--color-background)] p-4">
+    <div className="min-h-screen bg-[var(--color-background)]">
+      {/* Loading Overlay */}
+      <LoadingBar isLoading={isLoading} message="Signing in..." showOverlay={true} />
+      
       {/* Background Pattern */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#7BA4D0] rounded-full opacity-10 blur-3xl"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-[#E7F0FA] rounded-full opacity-10 blur-3xl"></div>
-      </div>
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-[var(--color-secondary)] rounded-full opacity-10 blur-3xl"></div>
+          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-[var(--color-light)] rounded-full opacity-10 blur-3xl"></div>
+        </div>
 
-      <div className="w-full max-w-md relative z-10">
+        <div className="w-full max-w-md relative z-10">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-[#7BA4D0] to-[#E7F0FA] shadow-2xl mb-4">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[var(--color-primary)] shadow-2xl mb-4">
             <span className="text-3xl font-bold text-white">O</span>
           </div>
           <h1 className="text-3xl font-bold text-[var(--color-text-primary)]">OweHost</h1>
@@ -111,13 +115,13 @@ export function LoginPage() {
               <label className="flex items-center gap-2 text-[var(--color-text-secondary)]">
                 <input
                   type="checkbox"
-                  className="w-4 h-4 rounded border-[var(--color-border)] bg-[var(--color-primary-dark)] text-[#E7F0FA] focus:ring-[#E7F0FA]"
+                  className="w-4 h-4 rounded border-[var(--color-border)] bg-white text-[var(--color-primary)] focus:ring-[var(--color-primary)]"
                 />
                 Remember me
               </label>
               <Link
                 to="/forgot-password"
-                className="text-[#E7F0FA] hover:text-[var(--color-text-primary)]"
+                className="text-[var(--color-info)] hover:text-[var(--color-info-dark)]"
               >
                 Forgot password?
               </Link>
@@ -137,7 +141,7 @@ export function LoginPage() {
           <div className="mt-6 text-center">
             <p className="text-sm text-[var(--color-text-muted)]">
               Don't have an account?{' '}
-              <Link to="/register" className="text-[#E7F0FA] hover:text-[var(--color-text-primary)] font-medium">
+              <Link to="/register" className="text-[var(--color-info)] hover:text-[var(--color-info-dark)] font-medium">
                 Contact administrator
               </Link>
             </p>
@@ -148,6 +152,7 @@ export function LoginPage() {
         <p className="text-center mt-8 text-sm text-[var(--color-text-muted)]">
           © 2024 OweHost. All rights reserved.
         </p>
+        </div>
       </div>
     </div>
   );

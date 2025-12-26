@@ -21,6 +21,8 @@ import {
   Wrench,
   ChevronLeft,
   ChevronRight,
+  Box,
+  ToggleLeft,
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -28,6 +30,8 @@ const navItems = [
   { path: '/admin', icon: LayoutDashboard, label: 'Dashboard' },
   { path: '/admin/users', icon: Users, label: 'Users' },
   { path: '/admin/resellers', icon: Store, label: 'Resellers' },
+  { path: '/admin/packages', icon: Box, label: 'Packages' },
+  { path: '/admin/features', icon: ToggleLeft, label: 'Features' },
   { path: '/admin/resources', icon: Zap, label: 'Resources' },
   { path: '/admin/domains', icon: Globe, label: 'Domains' },
   { path: '/admin/databases', icon: Database, label: 'Databases' },

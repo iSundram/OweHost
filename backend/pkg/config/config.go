@@ -12,6 +12,7 @@ type Config struct {
 	Server   ServerConfig
 	Database DatabaseConfig
 	Auth     AuthConfig
+	Admin    AdminConfig
 	Cluster  ClusterConfig
 	License  LicenseConfig
 }
@@ -24,7 +25,7 @@ type ServerConfig struct {
 	WriteTimeout time.Duration
 	EnableGRPC   bool
 	GRPCPort     int
-	
+
 	// Panel ports
 	UserPanelPort     int // Port 2083 - User cPanel-like interface
 	AdminPanelPort    int // Port 2087 - WHM/Admin interface
@@ -44,12 +45,19 @@ type DatabaseConfig struct {
 
 // AuthConfig holds authentication configuration
 type AuthConfig struct {
-	JWTSecret           string
-	JWTExpiry           time.Duration
-	RefreshTokenExpiry  time.Duration
-	APIKeyPrefix        string
-	PasswordMinLength   int
+	JWTSecret             string
+	JWTExpiry             time.Duration
+	RefreshTokenExpiry    time.Duration
+	APIKeyPrefix          string
+	PasswordMinLength     int
 	MaxConcurrentSessions int
+}
+
+// AdminConfig holds default admin user configuration
+type AdminConfig struct {
+	Username string
+	Email    string
+	Password string
 }
 
 // ClusterConfig holds cluster configuration
@@ -61,9 +69,9 @@ type ClusterConfig struct {
 
 // LicenseConfig holds licensing configuration
 type LicenseConfig struct {
-	Key               string
-	OfflineGraceDays  int
-	ValidationURL     string
+	Key              string
+	OfflineGraceDays int
+	ValidationURL    string
 }
 
 // Load loads configuration from environment variables with defaults
@@ -96,6 +104,11 @@ func Load() *Config {
 			APIKeyPrefix:          getEnv("OWEHOST_API_KEY_PREFIX", "owh_"),
 			PasswordMinLength:     getEnvInt("OWEHOST_PASSWORD_MIN_LENGTH", 8),
 			MaxConcurrentSessions: getEnvInt("OWEHOST_MAX_SESSIONS", 5),
+		},
+		Admin: AdminConfig{
+			Username: getEnv("OWEHOST_ADMIN_USERNAME", "admin"),
+			Email:    getEnv("OWEHOST_ADMIN_EMAIL", "admin@owehost.local"),
+			Password: getEnv("OWEHOST_ADMIN_PASSWORD", "admin@123"),
 		},
 		Cluster: ClusterConfig{
 			NodeID:            getEnv("OWEHOST_NODE_ID", "node-1"),

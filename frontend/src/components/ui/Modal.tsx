@@ -36,14 +36,14 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
       onClick={onClose}
     >
       <div
-        className={`w-full ${sizeClasses[size]} bg-[var(--color-surface)] rounded-2xl shadow-2xl border border-[var(--color-border-light)] max-h-[90vh] overflow-hidden flex flex-col`}
+        className={`w-full ${sizeClasses[size]} bg-white rounded-2xl shadow-xl border border-[var(--color-border)] max-h-[90vh] overflow-hidden flex flex-col`}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between p-6 border-b border-[var(--color-border-light)]">
+        <div className="flex items-center justify-between p-6 border-b border-[var(--color-border)]">
           <h2 className="text-xl font-semibold text-[var(--color-text-primary)]">{title}</h2>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-primary-dark)]/50 transition-colors"
+            className="p-2 rounded-lg text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-light)] transition-colors"
           >
             <X size={20} />
           </button>

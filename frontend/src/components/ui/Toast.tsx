@@ -68,17 +68,17 @@ function ToastContainer({ toasts, onRemove }: { toasts: Toast[]; onRemove: (id: 
 
 function ToastItem({ toast, onRemove }: { toast: Toast; onRemove: (id: string) => void }) {
   const icons = {
-    success: <CheckCircle size={20} className="text-green-500" />,
-    error: <AlertCircle size={20} className="text-red-500" />,
-    warning: <AlertTriangle size={20} className="text-yellow-500" />,
-    info: <Info size={20} className="text-blue-500" />,
+    success: <CheckCircle size={20} className="text-[var(--color-success)]" />,
+    error: <AlertCircle size={20} className="text-[var(--color-error)]" />,
+    warning: <AlertTriangle size={20} className="text-[var(--color-warning)]" />,
+    info: <Info size={20} className="text-[var(--color-info)]" />,
   };
 
   const colors = {
-    success: 'border-green-500/50 bg-green-500/10',
-    error: 'border-red-500/50 bg-red-500/10',
-    warning: 'border-yellow-500/50 bg-yellow-500/10',
-    info: 'border-blue-500/50 bg-blue-500/10',
+    success: 'border-[var(--color-success)]/50 bg-[var(--color-success)]/10',
+    error: 'border-[var(--color-error)]/50 bg-[var(--color-error)]/10',
+    warning: 'border-[var(--color-warning)]/50 bg-[var(--color-warning)]/10',
+    info: 'border-[var(--color-info)]/50 bg-[var(--color-info)]/10',
   };
 
   return (

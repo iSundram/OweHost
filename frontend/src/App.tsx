@@ -1,21 +1,21 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ToastProvider as OldToastProvider } from './context/ToastContext';
-import { ToastProvider } from './components/ui/Toast';
+import { ToastProvider, LoadingBar } from './components/ui';
 import { useAuth } from './hooks/useAuth';
 import { AdminLayout, ResellerLayout, UserLayout } from './components/layout';
 import {
-  LoginPage,
+  EmailLoginPage,
+  PasswordLoginPage,
   DashboardPage,
-  DomainsPage,
-  DatabasesPage,
-  UsersPage,
   AdminDashboardPage,
   ResellerDashboardPage,
 } from './pages';
 import { AdminUsersPage } from './pages/admin/AdminUsersPage';
 import { AdminResellersPage } from './pages/admin/AdminResellersPage';
 import { AdminResourcesPage } from './pages/admin/AdminResourcesPage';
+import { AdminPackagesPage } from './pages/admin/AdminPackagesPage';
+import { AdminFeaturesPage } from './pages/admin/AdminFeaturesPage';
 import { AdminDomainsPage } from './pages/admin/AdminDomainsPage';
 import { AdminDatabasesPage } from './pages/admin/AdminDatabasesPage';
 import { AdminDNSPage } from './pages/admin/AdminDNSPage';
@@ -34,6 +34,7 @@ import { AdminLicensePage } from './pages/admin/AdminLicensePage';
 import { AdminSettingsPage } from './pages/admin/AdminSettingsPage';
 import { AdminRecoveryPage } from './pages/admin/AdminRecoveryPage';
 import { ResellerCustomersPage } from './pages/reseller/ResellerCustomersPage';
+import { ResellerPackagesPage } from './pages/reseller/ResellerPackagesPage';
 import { ResellerResourcesPage } from './pages/reseller/ResellerResourcesPage';
 import { ResellerDomainsPage } from './pages/reseller/ResellerDomainsPage';
 import { ResellerDatabasesPage } from './pages/reseller/ResellerDatabasesPage';
@@ -69,13 +70,10 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[var(--color-background)]">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#7BA4D0] to-[#E7F0FA] flex items-center justify-center animate-pulse">
-            <span className="text-xl font-bold text-white">O</span>
-          </div>
-          <p className="text-[var(--color-text-secondary)]">Loading...</p>
-        </div>
+      <div className="min-h-screen bg-[var(--color-background)] flex items-center justify-center">
+        {/* Only progress bar, no overlay */}
+        <LoadingBar isLoading={true} message="Authenticating..." />
+        <p className="text-[var(--color-text-secondary)]">Loading...</p>
       </div>
     );
   }
@@ -139,7 +137,8 @@ function AppRoutes() {
 
   return (
     <Routes>
-      <Route path="/login" element={<LoginPage />} />
+      <Route path="/login" element={<EmailLoginPage />} />
+      <Route path="/login/password" element={<PasswordLoginPage />} />
       
       {/* Admin Routes */}
       <Route
@@ -155,6 +154,8 @@ function AppRoutes() {
         <Route index element={<AdminDashboardPage />} />
         <Route path="users" element={<AdminUsersPage />} />
         <Route path="resellers" element={<AdminResellersPage />} />
+        <Route path="packages" element={<AdminPackagesPage />} />
+        <Route path="features" element={<AdminFeaturesPage />} />
         <Route path="resources" element={<AdminResourcesPage />} />
         <Route path="domains" element={<AdminDomainsPage />} />
         <Route path="databases" element={<AdminDatabasesPage />} />
@@ -188,6 +189,7 @@ function AppRoutes() {
       >
         <Route index element={<ResellerDashboardPage />} />
         <Route path="customers" element={<ResellerCustomersPage />} />
+        <Route path="packages" element={<ResellerPackagesPage />} />
         <Route path="resources" element={<ResellerResourcesPage />} />
         <Route path="domains" element={<ResellerDomainsPage />} />
         <Route path="databases" element={<ResellerDatabasesPage />} />

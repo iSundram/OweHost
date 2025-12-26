@@ -19,12 +19,12 @@ export function Badge({
   dot = false,
 }: BadgeProps) {
   const variantClasses = {
-    default: 'bg-gray-500/20 text-gray-300 border-gray-500/30',
-    success: 'bg-green-500/20 text-green-400 border-green-500/30',
-    warning: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
-    error: 'bg-red-500/20 text-red-400 border-red-500/30',
-    info: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-    primary: 'bg-[var(--color-primary-medium)]/30 text-[#E7F0FA] border-[var(--color-primary-medium)]',
+    default: 'bg-gray-500/20 text-gray-600 border-gray-500/30',
+    success: 'bg-[var(--color-success)]/20 text-[var(--color-success)] border-[var(--color-success)]/30',
+    warning: 'bg-[var(--color-warning)]/20 text-[var(--color-warning)] border-[var(--color-warning)]/30',
+    error: 'bg-[var(--color-error)]/20 text-[var(--color-error)] border-[var(--color-error)]/30',
+    info: 'bg-[var(--color-info)]/20 text-[var(--color-info)] border-[var(--color-info)]/30',
+    primary: 'bg-[var(--color-primary)]/20 text-[var(--color-primary)] border-[var(--color-primary)]/30',
   };
 
   const sizeClasses = {
@@ -34,12 +34,12 @@ export function Badge({
   };
 
   const dotColors = {
-    default: 'bg-gray-400',
-    success: 'bg-green-400',
-    warning: 'bg-yellow-400',
-    error: 'bg-red-400',
-    info: 'bg-blue-400',
-    primary: 'bg-[#E7F0FA]',
+    default: 'bg-gray-500',
+    success: 'bg-[var(--color-success)]',
+    warning: 'bg-[var(--color-warning)]',
+    error: 'bg-[var(--color-error)]',
+    info: 'bg-[var(--color-info)]',
+    primary: 'bg-[var(--color-primary)]',
   };
 
   return (

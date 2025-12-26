@@ -9,5 +9,5 @@ export { EmptyState, ErrorState } from './EmptyState';
 export { ConfirmDialog } from './ConfirmDialog';
 export { Skeleton, TableSkeleton, CardSkeleton, DashboardSkeleton } from './LoadingSkeleton';
 export { ToastProvider, useToast } from './Toast';
-export { LoadingBar } from './LoadingBar';
+export { LoadingBar, useLoadingBar, LoadingProvider, useGlobalLoading } from './LoadingBar';
 export type { Toast, ToastType } from './Toast';

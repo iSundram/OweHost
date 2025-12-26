@@ -1,7 +1,11 @@
 export { LoginPage } from './LoginPage';
+export { EmailLoginPage } from './EmailLoginPage';
+export { PasswordLoginPage } from './PasswordLoginPage';
 export { DashboardPage } from './DashboardPage';
 export { DomainsPage } from './DomainsPage';
 export { DatabasesPage } from './DatabasesPage';
 export { UsersPage } from './UsersPage';
 export { AdminDashboardPage } from './admin/AdminDashboardPage';
 export { ResellerDashboardPage } from './reseller/ResellerDashboardPage';
+export { AdminPackagesPage } from './admin/AdminPackagesPage';
+export { AdminFeaturesPage } from './admin/AdminFeaturesPage';

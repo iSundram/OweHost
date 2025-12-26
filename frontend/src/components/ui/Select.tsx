@@ -36,15 +36,14 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             id={selectId}
             className={`
               w-full px-4 py-2.5 rounded-lg
-              bg-[var(--color-surface)]
-              border border-[var(--color-border)]
+              bg-white border border-[var(--color-border)]
               text-[var(--color-text-primary)]
               transition-all duration-200
-              focus:outline-none focus:ring-2 focus:ring-[#E7F0FA] focus:border-transparent
+              focus:outline-none focus:ring-2 focus:ring-[var(--color-info)] focus:border-[var(--color-info)]
               disabled:opacity-50 disabled:cursor-not-allowed
               appearance-none cursor-pointer
               pr-10
-              ${error ? 'border-[var(--color-error)] focus:ring-[var(--color-error)]' : ''}
+              ${error ? 'border-[var(--color-error)] focus:ring-[var(--color-error)] focus:border-[var(--color-error)]' : ''}
               ${className}
             `}
             {...props}

@@ -15,12 +15,14 @@ import {
   Settings,
   ChevronLeft,
   ChevronRight,
+  Box,
 } from 'lucide-react';
 import { useState } from 'react';
 
 const navItems = [
   { path: '/reseller', icon: LayoutDashboard, label: 'Dashboard' },
   { path: '/reseller/customers', icon: Users, label: 'Customers' },
+  { path: '/reseller/packages', icon: Box, label: 'Packages' },
   { path: '/reseller/resources', icon: Zap, label: 'Resources' },
   { path: '/reseller/domains', icon: Globe, label: 'Domains' },
   { path: '/reseller/databases', icon: Database, label: 'Databases' },

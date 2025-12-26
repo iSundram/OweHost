@@ -489,3 +489,135 @@ export const cronService = {
   getLog: (logId: string) =>
     apiClient.get<CronJobLog>(`/api/v1/cron/logs/${logId}`),
 };
+
+// Account Service (filesystem-based account management)
+export interface Account {
+  account_id: number;
+  identity: {
+    id: number;
+    name: string;
+    uid: number;
+    gid: number;
+    owner: string;
+    plan: string;
+    node: string;
+    created_at: string;
+    state: string;
+  };
+  limits: {
+    disk_mb: number;
+    cpu_percent: number;
+    ram_mb: number;
+    databases: number;
+    domains: number;
+    subdomains: number;
+    email_accounts: number;
+    ftp_accounts: number;
+    bandwidth_gb: number;
+    inodes: number;
+  };
+  status?: {
+    suspended: boolean;
+    locked: boolean;
+    reason?: string;
+    suspended_at?: string;
+    suspended_by?: string;
+  };
+  metadata?: {
+    email: string;
+    contact_name?: string;
+    contact_phone?: string;
+    notes?: string;
+    tags?: string[];
+    custom?: Record<string, string>;
+    updated_at: string;
+  };
+}
+
+export interface AccountCreateRequest {
+  username: string;
+  email: string;
+  password: string;
+  plan?: string; // starter, standard, premium, enterprise
+  owner?: string; // admin, reseller-X, partner-X
+  domain?: string;
+}
+
+export const accountService = {
+  list: () =>
+    apiClient.get<Account[]>('/api/v1/accounts'),
+
+  get: (id: number) =>
+    apiClient.get<Account>(`/api/v1/accounts/${id}`),
+
+  create: (data: AccountCreateRequest) =>
+    apiClient.post<{ account: Account; user?: any; domain?: any }>('/api/v1/accounts', data),
+
+  suspend: (id: number) =>
+    apiClient.post<Account>(`/api/v1/accounts/${id}/suspend`),
+
+  unsuspend: (id: number) =>
+    apiClient.post<Account>(`/api/v1/accounts/${id}/unsuspend`),
+
+  terminate: (id: number) =>
+    apiClient.post<Account>(`/api/v1/accounts/${id}/terminate`),
+};
+
+// Package/Plan Service
+export interface Package {
+  name: string;
+  display_name: string;
+  description: string;
+  limits: {
+    disk_mb: number;
+    cpu_percent: number;
+    ram_mb: number;
+    databases: number;
+    domains: number;
+    subdomains: number;
+    email_accounts: number;
+    ftp_accounts: number;
+    bandwidth_gb: number;
+    inodes: number;
+  };
+  features: Record<string, boolean>;
+  price?: {
+    monthly: number;
+    yearly: number;
+    currency: string;
+  };
+}
+
+export const packageService = {
+  list: () =>
+    apiClient.get<Package[]>('/api/v1/packages'),
+
+  get: (name: string) =>
+    apiClient.get<Package>(`/api/v1/packages/${name}`),
+};
+
+// Feature Manager Service
+export interface Feature {
+  name: string;
+  display_name: string;
+  description: string;
+  enabled: boolean;
+  category: string;
+}
+
+export interface FeatureCategory {
+  name: string;
+  display_name: string;
+  features: Feature[];
+}
+
+export const featureService = {
+  list: () =>
+    apiClient.get<FeatureCategory[]>('/api/v1/features'),
+
+  get: (name: string) =>
+    apiClient.get<Feature>(`/api/v1/features/${name}`),
+
+  update: (name: string, enabled: boolean) =>
+    apiClient.put<Feature>(`/api/v1/features/${name}`, { enabled }),
+};

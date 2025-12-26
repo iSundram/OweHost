@@ -32,38 +32,36 @@ export function Button({
 
   const variants = {
     primary: `
-      bg-gradient-to-r from-[#7BA4D0] to-[#E7F0FA]
-      hover:from-[#2E5E99] hover:to-[#7BA4D0]
-      text-white
-      focus:ring-[#E7F0FA]
-      shadow-lg hover:shadow-xl
+      bg-[var(--color-primary)] text-white
+      border border-[#1B1B1B]
+      hover:bg-[#3B3B3B] hover:border-[#2B2B2B]
+      focus:ring-[var(--color-primary)] focus:ring-offset-2
+      shadow-sm hover:shadow-md
     `,
     secondary: `
-      bg-[var(--color-surface)]
-      hover:bg-[var(--color-surface-elevated)]
-      text-[var(--color-text-primary)]
+      bg-white text-[var(--color-text-primary)]
       border border-[var(--color-border)]
-      focus:ring-[#7BA4D0]
+      hover:bg-gray-50 hover:border-[var(--color-secondary)]
+      focus:ring-[var(--color-info)] focus:ring-offset-2
     `,
     outline: `
-      bg-transparent
-      hover:bg-[var(--color-surface)]
-      text-[var(--color-text-primary)]
+      bg-transparent text-[var(--color-text-primary)]
       border border-[var(--color-border)]
-      focus:ring-[#7BA4D0]
+      hover:bg-[var(--color-light)] hover:border-[var(--color-secondary)]
+      focus:ring-[var(--color-info)] focus:ring-offset-2
     `,
     ghost: `
-      bg-transparent
-      hover:bg-[var(--color-surface)]
-      text-[var(--color-text-secondary)]
-      hover:text-[var(--color-text-primary)]
-      focus:ring-[#7BA4D0]
+      bg-transparent text-[var(--color-text-secondary)]
+      border border-transparent
+      hover:bg-[var(--color-light)] hover:text-[var(--color-text-primary)]
+      focus:ring-[var(--color-info)] focus:ring-offset-2
     `,
     danger: `
-      bg-[var(--color-error)]
-      hover:bg-red-600
-      text-white
-      focus:ring-red-500
+      bg-[var(--color-error)] text-white
+      border border-[var(--color-error-dark)]
+      hover:bg-[var(--color-error-dark)] hover:border-[#B91C1C]
+      focus:ring-[var(--color-error)] focus:ring-offset-2
+      shadow-sm hover:shadow-md
     `,
   };
 

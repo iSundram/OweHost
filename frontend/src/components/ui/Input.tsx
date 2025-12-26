@@ -35,16 +35,15 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             id={inputId}
             className={`
               w-full px-4 py-2.5 rounded-lg
-              bg-[var(--color-surface)]
-              border border-[var(--color-border)]
+              bg-white border border-[var(--color-border)]
               text-[var(--color-text-primary)]
               placeholder-[var(--color-text-muted)]
               transition-all duration-200
-              focus:outline-none focus:ring-2 focus:ring-[#E7F0FA] focus:border-transparent
+              focus:outline-none focus:ring-2 focus:ring-[var(--color-info)] focus:border-[var(--color-info)]
               disabled:opacity-50 disabled:cursor-not-allowed
               ${leftIcon ? 'pl-10' : ''}
               ${rightIcon ? 'pr-10' : ''}
-              ${error ? 'border-[var(--color-error)] focus:ring-[var(--color-error)]' : ''}
+              ${error ? 'border-[var(--color-error)] focus:ring-[var(--color-error)] focus:border-[var(--color-error)]' : ''}
               ${className}
             `}
             {...props}
